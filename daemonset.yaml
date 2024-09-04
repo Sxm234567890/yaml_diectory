@@ -1,0 +1,45 @@
+#kind的基本信息
+#要匹配的pod
+#要创建的pod和容器
+apiVersion: apps/v1 #kubectl explain deployment.apiVersion 
+kind: DaemonSet
+metadata:           #元数据 DaemonSet的相关
+   name: fluentd-elasticsearch
+   namespace: kube-system
+   labels: 
+      k8s-app: fluentd-logging
+spec:               #规范
+   selector:        #选择哪些pod
+     matchLabels:
+        name: fluentd-elasticsearch
+   template:        #pod模板，创建的pod
+     matadata:
+        labels:
+          name: fluentd-elasticsearch
+     spec:
+       tolerations:  #容忍度 不让pod在master节点和control-plane节点上开pod
+       - key: node-role.kubernetes.io/control-plane
+         operator: Exists
+         effect: NoSchedule
+       - key: node-role.kubernetes.io/master
+         operator: Exists
+         effect: NoSchedule
+        containers:  #创建容器
+        - name: fluentd-elasticsearch
+          images: quay.io/fluentd_elasticsearch/fluentd:v2.5.2 #开源数据收集器的镜像
+          resources:
+             limits:
+                 memory: 200Mi
+             requests:
+                 cpu: 100m
+                 memory: 200Mi
+          volumeMounts:
+          - name: varlog
+            mountPath: /var/log
+        terminationGracePeriodSeconds: 30  #定义了Pod终止前,给pod的宽限时间（秒）
+        volumes:
+        - name: varlog
+          hostPath:   #hostPath的卷
+             path: /var/log
+      
+       

@@ -1,0 +1,18 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1 #kubectl api-version |grep rbac.authorization.k8s.io
+                                         #Role 和 ClusterRole 都是在rbac.authorization.k8s.io API组中定义的，并且有两个稳定的版本
+metadata:
+  namespace: magedu  #指定命名空间
+  name: magedu-role
+rules:
+- apiGroups: ["*"]  #*代表所有  表示这个规则适用于所有API组中的资源。
+                    #API组是Kubernetes中用于将资源分组的一种方式，例如""（核心API组）、apps、extensions等。*表示所有API组。
+  resources: ["pods","pods/exec"]  #这个规则适用于pods资源和pods/exec子资源pods/exec是允许执行在pod中的容器
+  verbs: ["*"]   #执行操作权限 get list watch create update patch delete exec
+  ##RO-Role
+- apiGroups: ["extensions","apps/v1"]
+  resources: ["deployments"]
+  verbs: ["get","list","watch","create","update","patch","delete"]
+  ##RO-Role
+  #verbs: ["get","watch","list"]                                         
+

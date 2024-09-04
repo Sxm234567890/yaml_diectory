@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: quota-m
+  namespace: m43 #针对m43命名空间作资源限制
+spec:
+  hard:
+    requests.cpu: 2 #单个pod的资源请求是cpu 2个内存4G
+    requests.memory: 4Gi
+    limits.cpu: "8"  #namespace中所有的pod加起来可以使用的cpu最多是8个，内存最多是16g
+    limits.memory: 16Gi 
+    requests.nvidia.com/gpu: 4
+    pods: "2"
+    services: "6"
+    

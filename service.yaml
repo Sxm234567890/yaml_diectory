@@ -1,0 +1,26 @@
+kind: Service  #监听80端口的service有很多，但是打上不同标签，选择不同的pod
+apiVersion: v1  # kubectl get service.apiVersion
+metadata:
+   labels:
+     app: linux36-nginx
+   name: linux36-nginx-spec
+   namespace: linux36
+spec:
+   type: NodePort  #为service在集群中的每个节点上
+   ports:    #访问node的30001，然后转发到service的80端口，然后转发到真正容器的80端口
+   - name: http
+     port: 80  #service内部集群ip地址上的端口号，集群中其他pods可以通过这个端口访问service
+     protocol: TCP
+     targetPort: 80 #目标端口
+     nodePort: 30001 #node节点暴露的端口
+   - name: https 
+     port: 443
+     protocol: TCP
+     targetPort: 443
+     nodePort: 30043
+   selector: #service的标签选择器，定义要访问的目标pod
+     app: linux36-nginx 
+
+
+#Service选择Pod的方式
+#Service通过标签选择器（Label Selector）来选择一组Pod作为其后端。标签选择器允许Service指定一个或多个标签，只有具有这些标签的Pod才会被Service选中并作为其后端。
