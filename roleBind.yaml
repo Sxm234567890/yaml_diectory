@@ -1,0 +1,13 @@
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1 #kubectl api-resources |grep RoleBinding
+metadata:
+  name: role-bind-magedu
+  namespace: magedu
+sujects:
+- kind: ServiceAccount
+  name: xiaomin
+  namespace: mageudu
+roleRef:
+  kind: Role
+  name: magedu-role
+  apiGroup: rbac.authorization.k8s.io
