@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ng-deploy-80
+  template:
+    metadata:
+      labels:
+        app: ng-deploy-80
+    spec:
+      containers:
+      - name: ng-deploy-80
+        image: nginx.1.17.5
+        ports:
+        - containerPort: 80
+        livenessProbe:
+          httpGet:
+             path: /index.html
+             port: 80
+          initialDelaySeconds: 120   #pod启动之后要等120秒后进行第一次检测 （这个一般要长一点）
+          periodSeconds: 3           #每隔3秒检测一次
+          timeoutSeconds: 3          #探测超时时间
+          successThreshold: 1        #只能是1，失败后顶多再测一次
+          failureThreshold: 3
+___
+apiVersion: v1
+kind: Service
+metadata:
+  name: ng-deploy-80
+spec:
+  ports:
+  - name: http
+    port: 81
+    targetPort: 80
+    nodePort: 40012
+    protocol: TCP
+  type: NodePort
+  selector:
+    app: ng-deploy-80

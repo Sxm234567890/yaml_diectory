@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: deployment
+metadata:
+   labels:
+      app: linux36-nginx-deployment-label
+   name: linux36-nginx-deployment
+   namespace: linux36
+spec:
+  replicas: 1  #要启动的pod数
+  selector:    #定义要匹配的pod的标签
+    matchLabels:
+      app: linux36-nginx-selector
+  template:     #要启动的pod的要求
+    metadata: #
+      labels:
+         app: linux36-nginx-selector
+    spec:    #定义pod的信息
+      containers:
+      - name: linux36-nginx-container
+        image: harbor.magedu.net/linux36/nginx-web1:v1  #镜像地址（可以是本地harbor)
+       #command:["/apps/tomcat/bin/run_tomcat.sh"] #容器启动时执行的命令或脚本
+       #imagePullPolicy: IfNoPresent  #拉取镜像策略 
+                                      #ifNoPresent 如果本主机没有就去镜像地址拉，如果有就使用本主机上得镜像
+        imagePullPolicy: Always        #总是去镜像库拉
+        ports: 
+        - containerPort: 433
+          protocol: TCP
+          name: https
+        - containerPort: 80
+          protocol: TCP
+          name: http
+        env:
+        - name: "password"
+          value: "123456"
+        - name: "age"
+          value: "18"
+        resources:
+          limits:  #硬限制 上限
+            cpu: 2
+            memory: 2Gi
+          requests: #资源请求的限制
+            cpu: 1
+            memory: 512Mi
+          
+        

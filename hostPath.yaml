@@ -1,0 +1,28 @@
+kind: Deployment
+metadata: 
+  name: nginx-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ng-deploy-80
+  template:
+    metadata:
+      labels:
+        app: ng-deploy-80
+    spec:
+      containers:
+      - name: ng-deploy-80
+        image: nginx
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /data/nginx
+          name: cache-volume
+        volumes:
+        - name: cache-volume
+          hostPath:
+            path: /tmp/linuxm43
+        - name: localtime
+          hostPath:
+            path: /etc/localtime

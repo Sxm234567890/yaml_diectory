@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: configmap-volume
+  labels:
+  app: configmap
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+       app: configmap
+  template:
+    metadata:
+     labels:
+       app: configmap
+    spec:
+      containers:
+         - name: alpine
+           image: alpine:3
+           command:
+             - /bin/sh
+             - -c
+             - while true; do echo "$(date) My preferred sport is $(cat /etc/config/sport)";sleep 10;done;
+           ports:
+             - containerPort: 80
+           volumeMounts:
+             - name: config-volume
+               mountPath: /etc/config
+       volumes:
+         - name: config-volume
+           configMap:
+             name: sport #Kubernetes 将在 /etc/config 目录下创建一个名为 sport 的文件，文件内容将是 "Soccer"。 
