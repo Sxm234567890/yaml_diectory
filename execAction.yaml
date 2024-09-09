@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-deploy-6379
+  template:
+    metadata:
+      labels:
+        app: redis-deploy-6379
+    spec:
+      containers:
+      - name: redis-deploy-6379
+        image: redis
+        ports:
+        - containersPort: 6379
+        livenessProbe:
+          exec:   #进行非交互的命令
+            command:
+            - /usr/local/bin/redis-cli
+            - quit
+          initialDelaySeconds: 5
+          periodSeconds: 3
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
+---
+apiVerson: v1
+kind: Service
+metadata: 
+  name: redis-service
+spec:
+  ports:
+  - name: http
+    port: 6379
+    targetport: 6379
+    nodeProt: 40016
+    protocol: TCP
+  type: NodePort
+  selector:
+    app: redis-deploy-6379
